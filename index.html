@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OedoCalc Pro - Geoteknik</title>
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+    <!-- Rujukan CDN Gradio-Lite versi terbaru untuk menghindari bentrok tembolok Pyodide -->
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite@latest/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite@latest/dist/lite.css" />
     <style>
-      body { margin: 0; padding: 0; background-color: #0f172a; }
+      body { 
+        margin: 0; 
+        padding: 0; 
+        background-color: #0f172a; 
+        font-family: Arial, sans-serif;
+      }
     </style>
   </head>
   <body>
-    <!-- Pustaka murni Pyodide tanpa bentrok dependensi -->
+    <!-- Pembatasan library murni tanpa dependensi berat seperti easyocr atau python-docx -->
     <gradio-lite requirements="pandas, matplotlib, numpy">
 import gradio as gr
 import numpy as np
@@ -136,7 +143,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
 
         rab_text = f"ESTIMASI TOTAL BIAYA PROYEK ({luas_bangunan} m²):\nRp {total_bawah:,.0f} s/d Rp {total_atas:,.0f}"
 
-        # 6. EKSPOR KE CSV
+        # 6. EKSPOR KE CSV (NATIVE)
         df_export = pd.DataFrame({
             'Beban (kg/cm2)': beban_list,
             'Beban (kPa)': p_kpa,
@@ -151,7 +158,7 @@ def proses_oedometer_lengkap(file_excel, D_sample, H0, e0, tebal_lempung, cv, dr
     except Exception as e:
         return f"Terjadi kesalahan pemrosesan: {str(e)}", "", None, None, None
 
-# CSS RESPONSISTIF LIGHT & DARK MODE PERANGKAT
+# CSS RESPONSISTIF UNTUK LIGHT DAN DARK MODE PERANGKAT
 kustom_css = """
 .gradio-container { 
     background-image: url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=1920&auto=format&fit=crop') !important; 
@@ -197,17 +204,4 @@ with gr.Blocks(theme=gr.themes.Soft(), css=kustom_css) as aplikasi:
                         rab_out = gr.Textbox(label="Perkiraan Biaya", lines=6)
                     with gr.TabItem("📈 Kurva Utama (e - log p)"):
                         grafik_elogp_out = gr.Plot(label="Kurva e - log p")
-                    with gr.TabItem("📉 Grafik Penurunan Per Beban"):
-                        grafik_time_out = gr.Plot(label="Grafik Pembacaan Arloji vs √Waktu Per Beban")
-                file_csv_out = gr.File(label="📊 Unduh Hasil Ringkasan (.csv)")
-
-        tombol_analisis.click(
-            fn=proses_oedometer_lengkap, 
-            inputs=[file_input, D_input, H0_input, e0_input, tebal_input, cv_input, drainase_input, luas_input], 
-            outputs=[laporan_out, rab_out, grafik_elogp_out, grafik_time_out, file_csv_out]
-        )
-
-aplikasi.launch()
-    </gradio-lite>
-  </body>
-</html>
+                    with gr.Tab
